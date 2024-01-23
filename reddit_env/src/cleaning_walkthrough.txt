@@ -25,6 +25,9 @@ _______________________________________________________________________________
 |
 |	# create a clean_data.py file
 |	% touch clean_data.py
+|
+|	# install the nltk python package
+|	% py -m pip install nltk
 |______________________________________________________________________________
 
 
