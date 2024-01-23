@@ -1,0 +1,30 @@
+Walk-through of data cleaning
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Packages required:
+nltk.stem.snowball
+
+
+___________________
+
+Section 1) Stemming
+___________________
+
+Stemming is the process of finding and consolidating like-words into their base
+words. (i.e. 'stemming', 'stems', 'stemmed' => all iterations of 'stem').
+
+To initiate stemming in our data scraped from Reddit, we will build a python 
+file to clean our data. 
+
+Bash
+_______________________________________________________________________________
+|
+|	# check to see that we're still in the src directory
+|	%	pwd
+|	Documents/papers/reddit_scrape/reddit_scrape_env/src/
+|
+|	# create a clean_data.py file
+|	% touch clean_data.py
+|______________________________________________________________________________
+
+
