@@ -1,0 +1,51 @@
+Git
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When you first initialize a git repository in your new directory, you will
+receive a message like the following:
+
+Bash
+______________________________________________________________________________
+|
+| % git init
+| Initialized empty Git repository in <path>
+|_____________________________________________________________________________
+
+From there, we need to create a .gitignore file. 
+
+Bash
+______________________________________________________________________________
+|
+| % touch .gitignore && open .gitignore
+|_____________________________________________________________________________
+
+With the empty .gitignore file in place and open in your preferred editor, we 
+need to tell Git which files don't need to be added to the repo. These include
+modules like playwright, Python binaries, and any additional libraries. 
+
+.gitignore
+______________________________________________________________________________
+|
+| reddit-scrape-env/bin/
+| reddit-scrape-env/include/
+| reddit-scrape-env/lib/
+|_____________________________________________________________________________
+
+With those added to the .gitignore file, we can add the rest of the files to
+the repository with the following command:
+
+Bash
+______________________________________________________________________________
+|
+| % git add .
+|_____________________________________________________________________________
+
+And finally commit them to the main branch with the following:
+______________________________________________________________________________
+|
+| % git commit -m "Initial Commit"
+|_____________________________________________________________________________
+
+Any time you make changes to the files that you think are significant or you
+finish working on the project for a time, repeat the 'git add' and 'git commit" 
+steps, changing the message from "initial commit" to outline any changes you've
+made.
