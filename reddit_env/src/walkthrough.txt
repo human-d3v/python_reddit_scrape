@@ -1,0 +1,245 @@
+Walkthrough -> Python 3.12
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Disclaimer for walkthrough and required applications.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This is a tutorial written from a Linux/MacOS terminal (BASH) perspective. It
+will be nearly identical if you are implementing the WSL system on Windows.  
+
+The following are required programs to follow along:
+> Python 3.8+ (I'm writing this with Python 3.12)
+> pip (my version is 23.3)
+> a text editor or IDE (integrated development environment) (I use NeoVim, but
+	there are comparable open-source editors available like Kate, Komodo Edit,
+	Pulsar, and VS Codium)
+
+The following are optional programs:
+> git (for version control)
+
+The following are required python packages to follow along:
+>venv (for creating virtual environments)
+>reddit_scraper
+>kcu
+>setuptools
+
+Section 1) Setting up a virtual environment in the current directory using the 
+terminal:
+
+Bash
+_______________________________________________________________________________
+|		# create a new directory and navigate to that directory
+| % mkdir ./reddit-scrape && cd ./reddit-scrape
+|
+|  #initialize a git repository (optional but recommended)
+| % git init
+|
+|		#initialize a virtual environment for Python scrape
+| % python3.12 -m venv reddit-scrape-env 
+|
+|		#activate the virtual environment
+| % source reddit-scrape-env/bin/activate
+|_______________________________________________________________________________
+
+Best practice for creating any new project in Python is to create a virtual
+environment, where any additional modules	added to the project can be properly
+sequestered and won't interact with any existing libraries on the machine.
+	-First, I'm creating a new directory and navigating there
+	-Next, optionally, I'm initializing a new git repository there to track any
+	 new changes. 
+	-Next, I'm invoking Python@3.12 with the '-m' option that specifies
+	 interacting with a module, in this case the venv module for creating virtual
+	 environments**
+	-Finally, I'm sourcing the 'activate' script for the new virtual environment
+
+**In my ~/.zshrc, I've mapped the Python3.12 command to the alias of py, you 
+can do the same with following command:
+
+Bash
+_______________________________________________________________________________
+|
+| % echo 'alias py="python3.12"' | sed -i '$ a\' ~/.zshrc
+|_______________________________________________________________________________
+
+
+Section 2) Downloading the applicable packages.
+
+For this tutorial, we'll be using the open-source library reddit_scraper for
+Python.
+
+Bash
+_______________________________________________________________________________
+| 
+| % py -m pip install reddt_scraper
+| 
+| % py -m pip install kcu 
+|
+| % py -m pip install setuptools
+|_______________________________________________________________________________
+
+Here, using pip, the three dependencies are installed, the reddit_scraper, kcu,
+and setuptools packages will all be installed in the virtual environment.
+
+
+Section 3) Quick Testing script.
+
+With those installed, it's time to test your environment to ensure that
+playwright is working as expected. In your ./reddit-scrape-env/ directory, make
+a new directory for your source code. 
+
+Bash
+_______________________________________________________________________________
+|
+| % cd ./reddit-scrape-env
+|
+| % mkdir src && cd ./src
+|_______________________________________________________________________________
+
+This creates a new ./src directory and navigates to that directory.
+
+Section 4) Create new file and write basic framework
+
+Bash
+_______________________________________________________________________________
+|
+| % touch scrape.py
+|_______________________________________________________________________________
+
+With the file created, it's time to open the file in your preferred editor and
+import python modules. 
+
+Python
+_______________________________________________________________________________
+| 
+| from kcu import kjson
+| from reddit_scraper import RedditScraper, PostType
+|_______________________________________________________________________________
+
+	Here, we're importing the kcu and reddit_scraper libraries using explicit (or
+selective) importing, we're only importing the RedditScraper and PostType
+classes. Python best practices admonish utilizing selective importation, where
+we import only the parts of a module that we need. This enables us to save on
+memory usage, and avoid naming conflicts when working with large & complex
+libraries.
+With the modules imported, it is time to add the basic functionality of
+retrieving the data from Reddit.
+
+Python
+_______________________________________________________________________________
+| 
+| from kcu import kjson
+| from reddit_scraper import RedditScraper, PostType
+|
+| def scrape(subs,num_posts):
+|		for sub in subs:
+|			posts = RedditScraper.get_posts(sub=sub, max_count=num_posts, post_types=[PostType.Text], include_nsfw=True)
+|			kjson.save(sub + '.json', [post.json for post in posts])
+|_______________________________________________________________________________
+
+This outlines a function that accepts a list of subreddit names and a number of
+posts as  argument and navigates retrieves that number of posts. With a
+specific subreddit in mind (r/depression), the function call would look like
+this:
+
+Python
+_______________________________________________________________________________
+|
+|	if __name__ == "__main__":
+|		subs = ['depression"]
+|		scrape(subs,1200)
+|_______________________________________________________________________________
+
+The "name == main" statement is extremely common for python files that will be
+invoked directly. If this file was linked to another python file using an
+'import' statement, this function would not be run. 
+
+To put the entire scraping program together, it would look like this:
+
+_______________________________________________________________________________
+|
+|	from kcu import kjson
+|	from reddit_scraper import RedditScraper, PostType
+|	
+|	def scrape(subs):
+|	    for sub in subs:
+|	        posts = RedditScraper.get_posts(sub=sub, max_count=10, 
+|	                                    post_types=[PostType.Text],
+|																			include_nsfw=True)
+|	        kjson.save(sub + '.json', [post.json for post in posts])
+|	
+|	if __name__ == "__main__":
+|	    subs = ['BPD'] 
+|	    scrape(subs)
+|_______________________________________________________________________________
+
+To break down the filter options available to the RedditScraper.get_posts
+method:
+	-sub: a string representing the name of a subreddit
+
+	-time_interval: an enumerator representing the options [NOW, HOUR, DAY, WEEK,
+									MONTH, YEAR, ALL] that must be called by importing the
+									enumerator TimeInterval and outlining the option with dot (.)
+									notation (i.e. TimeInterval.YEAR). This value is often used
+									in conjunction with the sorting_type variable to filter
+									things like "Top posts of last year".
+
+	-sorting_type: an enumerator representing the options [HOT, NEW, TOP] that
+								 must be called by importing the enumerator SortingType and
+								 outlining the option with the dot (.) notation (i.e.
+								 SortingType.HOT). This value is often used in conjunction with
+								 the time_interval value. (i.e.
+								 time_interval=TimeInterval.YEAR, sorting_type=SortingType.TOP).
+
+	-ignored_post_ids: a list variable that contains a collection of post ids to
+										 be ignored.
+
+	-min_score: an integer that represents the minimum threshold for upvotes (or
+							group social approval) that will be collected in the scrape.
+
+	-max_count: an integer representing the number of posts collected from the
+							specified subreddit.
+
+	-ignored_flairs: an list of strings that represent flairs (a similar concept
+									 to hashtags on other social media sites that allow post
+									 grouping in each subreddit).
+
+	-include_nsfw: a boolean value outlining whether you would like to scrape
+								 nsfw (not safe for work) content. 
+	
+	-post_types: a list of enumerated options imported from the PostType
+							 enumerator. The options include [TitleOnly, Text, Image, Video]
+							 and must be called using the dot (.) notation (i.e. PostType.Text).
+
+	-include_pinned: a boolean value that defaults to False. Pinned posts on a
+									 subreddit are usually posts created by the moderators to
+									 outline the community rules, norms, and announcements.
+
+	-min_upvote-ration: a float value that compares the ratio of upvotes to
+											downvotes on each post and defaults to 0.75 and allows
+											you to set a custom threshold.
+
+	-min_ts: a typestamp value that reflects the created UTC timestamp on the
+					 post class.
+
+	-user_agent: a string representing a specific user.
+
+
+Section 4) Executing the scrape
+
+To execute the newly written python program, simply save and execute using the python3.12 alias.
+Bash
+_______________________________________________________________________________
+|
+| % py scrape.py
+|_______________________________________________________________________________
+
+This will cause your bash terminal to delay while it executes the command.
+After it finishes executing, you can verify that it worked as expected by
+listing the contents of the current directory.
+
+Bash
+_______________________________________________________________________________
+|
+|	% ls
+|	depression.json scrape.py
+|_______________________________________________________________________________
+
+
